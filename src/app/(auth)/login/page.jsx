@@ -29,12 +29,12 @@ export default function LoginPage() {
           </button>
           
           <p className={styles.terms}>
-            By continuing, you agree to CoralStats' <a className={styles.link} href="#">Terms</a> and <a className={styles.link} href="#">Privacy Policy</a>
+            By continuing, you agree to CoralStats&apos; <a className={styles.link} href="#">Terms</a> and <a className={styles.link} href="#">Privacy Policy</a>
           </p>
         </div>
         
         <p className={styles.footer}>
-          Don't have an account? <a className={styles.primaryLink} href="#">Request access →</a>
+          Don&apos;t have an account? <a className={styles.primaryLink} href="#">Request access →</a>
         </p>
       </div>
     </div>
