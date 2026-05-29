@@ -18,7 +18,13 @@ import {
   Clock,
   ArrowRight,
   MessageSquare,
-  LogOut
+  LogOut,
+  Shield,
+  Mail,
+  Crown,
+  Compass,
+  Flame,
+  CheckCircle2
 } from 'lucide-react';
 
 export {
@@ -41,6 +47,13 @@ export {
   Clock,
   ArrowRight,
   MessageSquare,
-  LogOut
+  LogOut,
+  Shield,
+  Mail,
+  Crown,
+  Compass,
+  Flame,
+  CheckCircle2
 };
+
 
