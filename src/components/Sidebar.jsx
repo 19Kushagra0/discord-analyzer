@@ -1,4 +1,7 @@
+"use client";
+
 import React from 'react';
+import { signOut } from 'next-auth/react';
 import styles from '@/styles/sidebar.module.css';
 import * as Icons from '@/components/Icons';
 
@@ -46,6 +49,26 @@ export default function Sidebar({ isOpen, onClose }) {
           <Icons.Settings className={styles.tabIcon} />
           <span>Settings</span>
         </a> */}
+
+        {/* Logout Button */}
+        <button
+          className={styles.tab}
+          style={{
+            marginTop: 'auto',
+            background: 'none',
+            border: 'none',
+            width: '100%',
+            textAlign: 'left',
+            outline: 'none',
+          }}
+          onClick={() => {
+            onClose();
+            signOut({ callbackUrl: '/' });
+          }}
+        >
+          <Icons.LogOut className={styles.tabIcon} />
+          <span>Log Out</span>
+        </button>
       </div>
       {/* User Bar Footer */}
       {/* <div className={styles.footer}>
