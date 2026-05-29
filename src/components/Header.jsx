@@ -18,9 +18,6 @@ export default function Header({ onToggleSidebar, isSidebarOpen }) {
         {/* <div className={styles.envPill}>
           <span className={styles.envText}>Production</span>
         </div> */}
-        <button aria-label="Notifications" className={styles.actionButton}>
-          <Icons.Bell className={styles.icon} />
-        </button> 
         <button 
           aria-label="Toggle Sidebar" 
           className={`${styles.actionButton} ${styles.hamburgerButton} ${isSidebarOpen ? styles.hamburgerHidden : ''}`} 

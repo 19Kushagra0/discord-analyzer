@@ -24,7 +24,8 @@ import {
   Crown,
   Compass,
   Flame,
-  CheckCircle2
+  CheckCircle2,
+  Trash2
 } from 'lucide-react';
 
 export {
@@ -53,7 +54,8 @@ export {
   Crown,
   Compass,
   Flame,
-  CheckCircle2
+  CheckCircle2,
+  Trash2
 };
 
 

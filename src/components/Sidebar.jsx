@@ -2,53 +2,49 @@
 
 import React from 'react';
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/sidebar.module.css';
 import * as Icons from '@/components/Icons';
 
 export default function Sidebar({ isOpen, onClose }) {
+  const pathname = usePathname();
+
+  const getTabClass = (path) => {
+    return pathname === path ? styles.activeTab : styles.tab;
+  };
+
   return (
     <nav className={`${styles.sidebar} ${isOpen ? styles.mobileOpen : ''}`}>
       {/* Workspace Header */}
       <div className={styles.workspaceHeader}>
         <div className={styles.workspaceInner}>
-          <div className={styles.workspaceIcon}>M</div>
+          <div className={styles.workspaceIcon}>D</div>
           <div>
-            <h2 className={styles.workspaceTitle}>Workspace</h2>
-            <p className={styles.workspaceSubtitle}>Enterprise Tier</p>
+            <h2 className={styles.workspaceTitle}>Discord Analyzer</h2>
+            <p className={styles.workspaceSubtitle}>Personal Edition</p>
           </div>
         </div>
       </div>
       {/* Main Tabs */}
       <div className={styles.tabsContainer}>
-        {/* Active Tab: Overview */}
-        <a className={styles.activeTab} href="#" onClick={onClose}>
+        {/* Tab: Overview / Dashboard */}
+        <Link className={getTabClass('/dashboard')} href="/dashboard" onClick={onClose}>
           <Icons.LayoutDashboard className={styles.tabIcon} />
           <span>Overview</span>
-        </a>
-        {/* <a className={styles.tab} href="#" onClick={onClose}>
-          <Icons.Activity className={styles.tabIcon} />
-          <span>Observability</span>
-        </a>
-        <a className={styles.tab} href="#" onClick={onClose}>
+        </Link>
+
+        {/* Tab: Personal Servers */}
+        <Link className={getTabClass('/personal-servers')} href="/personal-servers" onClick={onClose}>
+          <Icons.Crown className={styles.tabIcon} />
+          <span>Personal Server</span>
+        </Link>
+
+        {/* Tab: Coral SQL Console */}
+        <Link className={getTabClass('/coral-query')} href="/coral-query" onClick={onClose}>
           <Icons.Terminal className={styles.tabIcon} />
-          <span>Prompts</span>
-        </a>
-        <a className={styles.tab} href="#" onClick={onClose}>
-          <Icons.BarChart2 className={styles.tabIcon} />
-          <span>Evals</span>
-        </a>
-        <a className={styles.tab} href="#" onClick={onClose}>
-          <Icons.Key className={styles.tabIcon} />
-          <span>API Keys</span>
-        </a>
-        <a className={styles.tab} href="#" onClick={onClose}>
-          <Icons.Users className={styles.tabIcon} />
-          <span>Team</span>
-        </a>
-        <a className={styles.tab} href="#" onClick={onClose}>
-          <Icons.Settings className={styles.tabIcon} />
-          <span>Settings</span>
-        </a> */}
+          <span>Coral SQL Console</span>
+        </Link>
 
         {/* Logout Button */}
         <button
@@ -70,14 +66,6 @@ export default function Sidebar({ isOpen, onClose }) {
           <span>Log Out</span>
         </button>
       </div>
-      {/* User Bar Footer */}
-      {/* <div className={styles.footer}>
-        <div className={styles.footerLeft}>
-          <Icons.PieChart className={styles.footerIcon} />
-          <span className={styles.footerText}>Usage: 84%</span>
-        </div>
-        <Icons.UserCircle className={styles.footerIcon} />
-      </div> */}
     </nav>
   );
 }
