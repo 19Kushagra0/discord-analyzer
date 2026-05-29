@@ -17,7 +17,8 @@ import {
   Info,
   Clock,
   ArrowRight,
-  MessageSquare
+  MessageSquare,
+  LogOut
 } from 'lucide-react';
 
 export {
@@ -39,6 +40,7 @@ export {
   Info,
   Clock,
   ArrowRight,
-  MessageSquare
+  MessageSquare,
+  LogOut
 };
 
