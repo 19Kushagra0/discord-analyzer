@@ -37,3 +37,15 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #33353a; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #44464e; }
+
+/* Sunken effect for inputs/cards */
+.sunken { background-color: #1e1f22; }
+
+/* Specific card background per prompt */
+.card-bg { background-color: #313338; }

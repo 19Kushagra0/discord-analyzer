@@ -1,0 +1,27 @@
+.main {
+  margin-left: 0;
+  padding-top: var(--spacing-topbar-height, 48px);
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 35;
+  transition: opacity 0.2s ease;
+}
+
+@media (min-width: 1024px) {
+  .main {
+    margin-left: var(--spacing-sidebar-width, 240px);
+  }
+  .backdrop {
+    display: none;
+  }
+}
