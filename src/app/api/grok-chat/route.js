@@ -2,9 +2,72 @@ import { executeSQL } from '@/lib/coralSimulator';
 
 export const runtime = 'nodejs'; // Use nodejs environment for full stream support
 
+// In-memory store for rate limiting (persists in Node.js environment)
+const rateLimitStore = new Map();
+
+/**
+ * Sliding-window rate limiter.
+ * Limits prompts to `limit` actions within a rolling `windowMs` timeframe.
+ */
+function isRateLimited(key, limit = 10, windowMs = 120000) {
+  const now = Date.now();
+  
+  // Dynamic cleanup to prevent memory leaks if store becomes too large
+  if (rateLimitStore.size > 1000) {
+    for (const [k, tsList] of rateLimitStore.entries()) {
+      const active = tsList.filter(ts => now - ts < windowMs);
+      if (active.length === 0) {
+        rateLimitStore.delete(k);
+      } else {
+        rateLimitStore.set(k, active);
+      }
+    }
+  }
+
+  if (!rateLimitStore.has(key)) {
+    rateLimitStore.set(key, [now]);
+    return { limited: false, remaining: limit - 1, resetMs: windowMs };
+  }
+
+  const timestamps = rateLimitStore.get(key);
+  const validTimestamps = timestamps.filter(ts => now - ts < windowMs);
+
+  if (validTimestamps.length >= limit) {
+    const oldestActive = validTimestamps[0];
+    const resetMs = windowMs - (now - oldestActive);
+    rateLimitStore.set(key, validTimestamps);
+    return { limited: true, remaining: 0, resetMs };
+  }
+
+  validTimestamps.push(now);
+  rateLimitStore.set(key, validTimestamps);
+  return {
+    limited: false,
+    remaining: limit - validTimestamps.length,
+    resetMs: windowMs - (now - validTimestamps[0])
+  };
+}
+
 export async function POST(req) {
   try {
     const { question, profile, servers } = await req.json();
+
+    // 0. AI Rate Limiting check (10 prompts every 2 minutes)
+    const rateLimitKey = profile?.id || req.headers.get('x-forwarded-for') || 'anonymous';
+    const limitCheck = isRateLimited(rateLimitKey, 10, 120000);
+
+    if (limitCheck.limited) {
+      const minutes = Math.floor(limitCheck.resetMs / 60000);
+      const seconds = Math.ceil((limitCheck.resetMs % 60000) / 1000);
+      const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+
+      return new Response(
+        JSON.stringify({
+          error: `Rate limit exceeded. You can only send 10 prompts every 2 minutes. Please try again in ${timeString}.`
+        }),
+        { status: 429, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
     const apiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
 
