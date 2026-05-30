@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import styles from '@/styles/login.module.css';
-import { MessageSquare } from '@/components/Icons';
+import { MessageSquare, Play } from '@/components/Icons';
 import { signIn } from 'next-auth/react'; // 2. Import the Auth.js magic function
 
 export default function LoginPage() {
@@ -27,6 +27,14 @@ export default function LoginPage() {
             <MessageSquare size={18} />
             <span>Continue with Discord</span>
           </button>
+
+          <Link 
+            href="/dashboard?demo=true"
+            className={styles.demoBtn}
+          >
+            <Play size={16} style={{ transform: 'translateX(1px)' }} />
+            <span>Continue in Demo Mode</span>
+          </Link>
           
           <p className={styles.terms}>
             By continuing, you agree to CoralStats&apos; <a className={styles.link} href="#">Terms</a> and <a className={styles.link} href="#">Privacy Policy</a>
@@ -36,6 +44,9 @@ export default function LoginPage() {
         <p className={styles.footer}>
           Don&apos;t have an account? <a className={styles.primaryLink} href="#">Request access →</a>
         </p>
+        <Link href="/" className={styles.backHome}>
+          ← Back to Home
+        </Link>
       </div>
     </div>
   );

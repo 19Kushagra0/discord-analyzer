@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import styles from '@/styles/layout.module.css';
@@ -19,7 +19,9 @@ export default function DiscordLayout({ children }) {
   return (
     <>
       <Header onToggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+      <Suspense fallback={null}>
+        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+      </Suspense>
       {isSidebarOpen && (
         <div className={styles.backdrop} onClick={closeSidebar} />
       )}

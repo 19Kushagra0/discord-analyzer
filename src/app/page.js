@@ -18,7 +18,7 @@ export default function Page() {
           </div>
         </div>
         <div className={styles.navActions}>
-          {/* <a className={styles.navLoginLink} href="#">Log in</a> */}
+          <Link className={styles.navLink} href="/login" style={{ fontSize: '13px', marginRight: '8px' }}>Demo Mode</Link>
           <Link className={styles.navConnectBtn} href="/login">Connect Discord</Link>
         </div>
       </nav>
@@ -41,8 +41,8 @@ export default function Page() {
               Analyze My Server
               <ArrowRight size={18} />
             </Link>
-            <Link href="https://github.com/withcoral/coral" className={styles.secondaryBtn}>
-              View Open Source Bounty
+            <Link href="/login" className={styles.secondaryBtn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              ⚡ Try Demo Mode
             </Link>
           </div>
           <div className={styles.dividerSection}>

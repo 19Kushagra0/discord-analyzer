@@ -5,6 +5,10 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { adminDb } from '@/lib/firebase-admin';
 import WipeButton from '@/components/WipeButton';
+import ConnectDemoButton from '@/components/ConnectDemoButton';
+import { ensureDemoDataSeeded } from '@/lib/seedDemoData';
+import InviteBotButton from '@/components/InviteBotButton';
+import { redirect } from 'next/navigation';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -133,15 +137,13 @@ function decodeFeature(f) {
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function Page() {
-  const session = await getServerSession(authOptions);
+export default async function Page({ searchParams }) {
+  const resolvedParams = await searchParams;
+  const isDemo = resolvedParams?.demo === 'true';
+  const session = isDemo ? { user: { id: 'demo_user' } } : await getServerSession(authOptions);
 
   if (!session?.user) {
-    return (
-      <div className={styles.container} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' }}>
-        <p style={{ color: '#949ba4' }}>Not authenticated. Please log in.</p>
-      </div>
-    );
+    redirect('/login');
   }
 
   let ownedServers = [];
@@ -151,122 +153,144 @@ export default async function Page() {
   let engagementMap = {}; // { [guildId]: activeMembers[] }
   let errorMsg = null;
 
-  try {
-    const snap = await adminDb.collection('accounts').where('userId', '==', session.user.id).get();
-    if (!snap.empty) {
-      const token = snap.docs[0].data().access_token;
-      if (token) {
-        const guildsRes = await fetch('https://discord.com/api/users/@me/guilds', {
-          headers: { Authorization: `Bearer ${token}` },
-          next: { revalidate: 60 },
-        });
-        if (guildsRes.ok) {
-          const all = await guildsRes.json();
-          ownedServers = all.filter(g => g.owner);
+  if (isDemo) {
+    await ensureDemoDataSeeded(adminDb);
+    try {
+      const [ownedSnap, detailSnap, rolesSnap, channelSnap, engagementSnap] = await Promise.all([
+        adminDb.collection('demo_data').doc('owned_servers').get(),
+        adminDb.collection('demo_data').doc('guild_details').get(),
+        adminDb.collection('demo_data').doc('roles').get(),
+        adminDb.collection('demo_data').doc('channels').get(),
+        adminDb.collection('demo_data').doc('engagement').get()
+      ]);
 
-          const botToken = process.env.DISCORD_BOT_TOKEN;
-          if (botToken && ownedServers.length > 0) {
-            // Step 1: Fetch Channels, Details, and Roles in parallel for all guilds
-            const primaryFetches = await Promise.all(
-              ownedServers.map(async (g) => {
-                const headers = { Authorization: `Bot ${botToken}` };
-                try {
-                  const [chRes, detRes, rolesRes] = await Promise.all([
-                    fetch(`https://discord.com/api/v10/guilds/${g.id}/channels`, { headers, next: { revalidate: 60 } }),
-                    fetch(`https://discord.com/api/v10/guilds/${g.id}?with_counts=true`, { headers, next: { revalidate: 60 } }),
-                    fetch(`https://discord.com/api/v10/guilds/${g.id}/roles`, { headers, next: { revalidate: 60 } }),
-                  ]);
+      ownedServers = ownedSnap.exists ? (ownedSnap.data().list || []) : [];
+      guildDetailMap = detailSnap.exists ? detailSnap.data() : {};
+      rolesMap = rolesSnap.exists ? rolesSnap.data() : {};
+      channelMap = channelSnap.exists ? channelSnap.data() : {};
+      engagementMap = engagementSnap.exists ? engagementSnap.data() : {};
+    } catch (e) {
+      console.error("Error loading demo servers from Firestore:", e);
+      errorMsg = "Failed to load database demo data.";
+    }
+  } else {
+    try {
+      const snap = await adminDb.collection('accounts').where('userId', '==', session.user.id).get();
+      if (!snap.empty) {
+        const token = snap.docs[0].data().access_token;
+        if (token) {
+          const guildsRes = await fetch('https://discord.com/api/users/@me/guilds', {
+            headers: { Authorization: `Bearer ${token}` },
+            next: { revalidate: 60 },
+          });
+          if (guildsRes.ok) {
+            const all = await guildsRes.json();
+            ownedServers = all.filter(g => g.owner);
 
-                  const channels = chRes.ok ? await chRes.json() : [];
-                  const details = detRes.ok ? await detRes.json() : null;
-                  const roles = rolesRes.ok ? await rolesRes.json() : [];
+            const botToken = process.env.DISCORD_BOT_TOKEN;
+            if (botToken && ownedServers.length > 0) {
+              // Step 1: Fetch Channels, Details, and Roles in parallel for all guilds
+              const primaryFetches = await Promise.all(
+                ownedServers.map(async (g) => {
+                  const headers = { Authorization: `Bot ${botToken}` };
+                  try {
+                    const [chRes, detRes, rolesRes] = await Promise.all([
+                      fetch(`https://discord.com/api/v10/guilds/${g.id}/channels`, { headers, next: { revalidate: 60 } }),
+                      fetch(`https://discord.com/api/v10/guilds/${g.id}?with_counts=true`, { headers, next: { revalidate: 60 } }),
+                      fetch(`https://discord.com/api/v10/guilds/${g.id}/roles`, { headers, next: { revalidate: 60 } }),
+                    ]);
 
-                  return { id: g.id, channels, details, roles };
-                } catch (e) {
-                  console.error(`Error in bot fetches for guild ${g.id}:`, e);
-                  return { id: g.id, channels: [], details: null, roles: [] };
-                }
-              })
-            );
+                    const channels = chRes.ok ? await chRes.json() : [];
+                    const details = detRes.ok ? await detRes.json() : null;
+                    const roles = rolesRes.ok ? await rolesRes.json() : [];
 
-            // Step 2: Fetch Engagement Data for text channels in parallel
-            const engagementFetches = await Promise.all(
-              primaryFetches.map(async (f) => {
-                if (!f.channels || f.channels.length === 0) return { id: f.id, engagement: [] };
+                    return { id: g.id, channels, details, roles };
+                  } catch (e) {
+                    console.error(`Error in bot fetches for guild ${g.id}:`, e);
+                    return { id: g.id, channels: [], details: null, roles: [] };
+                  }
+                })
+              );
 
-                // Get up to 5 text channels
-                const textChannels = f.channels.filter(c => c.type === 0).slice(0, 5);
-                if (textChannels.length === 0) return { id: f.id, engagement: [] };
+              // Step 2: Fetch Engagement Data for text channels in parallel
+              const engagementFetches = await Promise.all(
+                primaryFetches.map(async (f) => {
+                  if (!f.channels || f.channels.length === 0) return { id: f.id, engagement: [] };
 
-                const headers = { Authorization: `Bot ${botToken}` };
-                const messageFetches = await Promise.all(
-                  textChannels.map(async (ch) => {
-                    try {
-                      const res = await fetch(`https://discord.com/api/v10/channels/${ch.id}/messages?limit=100`, { headers, next: { revalidate: 60 } });
-                      if (res.ok) {
-                        return await res.json();
+                  // Get up to 5 text channels
+                  const textChannels = f.channels.filter(c => c.type === 0).slice(0, 5);
+                  if (textChannels.length === 0) return { id: f.id, engagement: [] };
+
+                  const headers = { Authorization: `Bot ${botToken}` };
+                  const messageFetches = await Promise.all(
+                    textChannels.map(async (ch) => {
+                      try {
+                        const res = await fetch(`https://discord.com/api/v10/channels/${ch.id}/messages?limit=100`, { headers, next: { revalidate: 60 } });
+                        if (res.ok) {
+                          return await res.json();
+                        }
+                      } catch (e) {
+                        console.error(`Failed to fetch messages for channel ${ch.id}:`, e);
                       }
-                    } catch (e) {
-                      console.error(`Failed to fetch messages for channel ${ch.id}:`, e);
-                    }
-                    return [];
-                  })
-                );
+                      return [];
+                    })
+                  );
 
-                const userMessageCounts = {};
-                messageFetches.forEach((msgs) => {
-                  if (!Array.isArray(msgs)) return;
-                  msgs.forEach((m) => {
-                    if (!m.author || m.author.bot) return;
-                    const authorKey = m.author.global_name || m.author.username;
-                    if (!userMessageCounts[authorKey]) {
-                      userMessageCounts[authorKey] = {
-                        username: authorKey,
-                        count: 0,
-                        avatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png?size=64` : null,
-                        tag: m.author.username,
-                      };
-                    }
-                    userMessageCounts[authorKey].count += 1;
+                  const userMessageCounts = {};
+                  messageFetches.forEach((msgs) => {
+                    if (!Array.isArray(msgs)) return;
+                    msgs.forEach((m) => {
+                      if (!m.author || m.author.bot) return;
+                      const authorKey = m.author.global_name || m.author.username;
+                      if (!userMessageCounts[authorKey]) {
+                        userMessageCounts[authorKey] = {
+                          username: authorKey,
+                          count: 0,
+                          avatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png?size=64` : null,
+                          tag: m.author.username,
+                        };
+                      }
+                      userMessageCounts[authorKey].count += 1;
+                    });
                   });
+
+                  const sorted = Object.values(userMessageCounts)
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+
+                  return { id: f.id, engagement: sorted };
+                })
+              );
+
+              // Assign mapping collections
+              primaryFetches.forEach((f) => {
+                const raw = Array.isArray(f.channels) ? f.channels : [];
+                channelMap[f.id] = raw.sort((a, b) => {
+                  if (a.type === 4 && b.type !== 4) return -1;
+                  if (a.type !== 4 && b.type === 4) return 1;
+                  return (a.position ?? 0) - (b.position ?? 0);
                 });
-
-                const sorted = Object.values(userMessageCounts)
-                  .sort((a, b) => b.count - a.count)
-                  .slice(0, 5);
-
-                return { id: f.id, engagement: sorted };
-              })
-            );
-
-            // Assign mapping collections
-            primaryFetches.forEach((f) => {
-              const raw = Array.isArray(f.channels) ? f.channels : [];
-              channelMap[f.id] = raw.sort((a, b) => {
-                if (a.type === 4 && b.type !== 4) return -1;
-                if (a.type !== 4 && b.type === 4) return 1;
-                return (a.position ?? 0) - (b.position ?? 0);
+                guildDetailMap[f.id] = f.details;
+                rolesMap[f.id] = f.roles;
               });
-              guildDetailMap[f.id] = f.details;
-              rolesMap[f.id] = f.roles;
-            });
 
-            engagementFetches.forEach((ef) => {
-              engagementMap[ef.id] = ef.engagement;
-            });
+              engagementFetches.forEach((ef) => {
+                engagementMap[ef.id] = ef.engagement;
+              });
+            }
+          } else {
+            errorMsg = `Discord API error (${guildsRes.status}). Try logging out.`;
           }
         } else {
-          errorMsg = `Discord API error (${guildsRes.status}). Try logging out.`;
+          errorMsg = 'No access token found. Try logging out and back in.';
         }
       } else {
-        errorMsg = 'No access token found. Try logging out and back in.';
+        errorMsg = 'No linked account found. Try logging out and back in.';
       }
-    } else {
-      errorMsg = 'No linked account found. Try logging out and back in.';
+    } catch (e) {
+      console.error(e);
+      errorMsg = 'Failed to load server data.';
     }
-  } catch (e) {
-    console.error(e);
-    errorMsg = 'Failed to load server data.';
   }
 
   if (errorMsg) {
@@ -289,12 +313,36 @@ export default async function Page() {
   return (
     <div className={styles.container}>
 
+      {isDemo && (
+        <div style={{
+          background: 'linear-gradient(90deg, rgba(88,101,242,0.15), rgba(255,115,250,0.15))',
+          border: '1px solid rgba(88,101,242,0.3)',
+          borderRadius: '12px',
+          padding: '1rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          marginBottom: '0.5rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Icons.Crown style={{ color: '#ff73fa' }} size={20} />
+            <div>
+              <p style={{ margin: 0, fontWeight: 700, color: '#fff', fontSize: '0.9rem' }}>You are viewing the dashboard in Demo Mode</p>
+              <p style={{ margin: '2px 0 0', color: '#949ba4', fontSize: '0.8rem' }}>Interact with mock Coral metrics and ask Grok anything about your server data.</p>
+            </div>
+          </div>
+          <ConnectDemoButton />
+        </div>
+      )}
+
       {/* ── Page Header ─────────────────────────────────────────────────── */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.headerTitle}>👑 Personal Servers</h1>
+          <h1 className={styles.headerTitle}>👑 Your servers</h1>
           <p className={styles.headerSubtitle}>
-            Discord servers you created or own · {ownedServers.length} server{ownedServers.length !== 1 ? 's' : ''}
+            Discord servers you created or own · {ownedServers.length} server{ownedServers.length !== 1 ? 's' : ''} {isDemo ? '(Demo Mode)' : ''}
           </p>
         </div>
       </div>
@@ -372,7 +420,7 @@ export default async function Page() {
                         fontWeight: 900, fontSize: '1.75rem', color: '#fff',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
                       }}>
-                        {server.name.charAt(0).toUpperCase()}
+                        {[...server.name][0]?.toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -390,14 +438,11 @@ export default async function Page() {
                       </p>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <a 
-                        href={`https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=66560&scope=bot&guild_id=${server.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff', padding: '4px 10px', borderRadius: '10px', background: '#5865F2', border: '1px solid #4752c4', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
-                      >
-                        🤖 Invite Bot
-                      </a>
+                      <InviteBotButton 
+                        isDemo={isDemo} 
+                        clientId={process.env.DISCORD_CLIENT_ID} 
+                        guildId={server.id} 
+                      />
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#ffd700', padding: '4px 10px', borderRadius: '10px', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)' }}>
                         👑 OWNER
                       </span>
@@ -737,7 +782,7 @@ export default async function Page() {
                                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                                   fontSize: '0.75rem', fontWeight: 700, color: '#dcddde', flexShrink: 0
                                 }}>
-                                  {member.username.charAt(0).toUpperCase()}
+                                  {[...member.username][0]?.toUpperCase()}
                                 </div>
                               )}
                               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>

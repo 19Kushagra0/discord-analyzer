@@ -4,6 +4,9 @@ import * as Icons from '@/components/Icons';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { adminDb } from '@/lib/firebase-admin';
+import ConnectDemoButton from '@/components/ConnectDemoButton';
+import { ensureDemoDataSeeded } from '@/lib/seedDemoData';
+import { redirect } from 'next/navigation';
 
 // Decode Discord public_flags bitfield into badge labels
 function getDiscordBadges(flags) {
@@ -73,48 +76,61 @@ function accountAge(date) {
   return parts.length ? parts.join(', ') : 'Today';
 }
 
-export default async function Page() {
-  const session = await getServerSession(authOptions);
+export default async function Page({ searchParams }) {
+  const resolvedParams = await searchParams;
+  const isDemo = resolvedParams?.demo === 'true';
+  const session = isDemo ? { user: { id: 'demo_user' } } : await getServerSession(authOptions);
 
   if (!session?.user) {
-    return (
-      <div className={styles.container} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '80vh' }}>
-        <p style={{ color: '#949ba4' }}>Not authenticated. Please log in.</p>
-      </div>
-    );
+    redirect('/login');
   }
 
   let profile = null;
   let guilds = [];
   let errorMsg = null;
 
-  try {
-    const snap = await adminDb.collection('accounts').where('userId', '==', session.user.id).get();
-    if (!snap.empty) {
-      const token = snap.docs[0].data().access_token;
-      if (token) {
-        const [profileRes, guildsRes] = await Promise.all([
-          fetch('https://discord.com/api/users/@me', {
-            headers: { Authorization: `Bearer ${token}` },
-            next: { revalidate: 60 },
-          }),
-          fetch('https://discord.com/api/users/@me/guilds', {
-            headers: { Authorization: `Bearer ${token}` },
-            next: { revalidate: 60 },
-          }),
-        ]);
-        if (profileRes.ok) profile = await profileRes.json();
-        else errorMsg = `Discord API error (${profileRes.status}). Try logging out and back in.`;
-        if (guildsRes.ok) guilds = await guildsRes.json();
-      } else {
-        errorMsg = 'No access token found. Try logging out and back in.';
-      }
-    } else {
-      errorMsg = 'No linked account found. Try logging out and back in.';
+  if (isDemo) {
+    await ensureDemoDataSeeded(adminDb);
+    try {
+      const [profileSnap, guildsSnap] = await Promise.all([
+        adminDb.collection('demo_data').doc('profile').get(),
+        adminDb.collection('demo_data').doc('guilds').get()
+      ]);
+      profile = profileSnap.exists ? profileSnap.data() : null;
+      guilds = guildsSnap.exists ? (guildsSnap.data().list || []) : [];
+    } catch (e) {
+      console.error("Error loading demo data from Firestore:", e);
+      errorMsg = "Failed to load database demo data.";
     }
-  } catch (e) {
-    console.error(e);
-    errorMsg = 'Failed to load profile.';
+  } else {
+    try {
+      const snap = await adminDb.collection('accounts').where('userId', '==', session.user.id).get();
+      if (!snap.empty) {
+        const token = snap.docs[0].data().access_token;
+        if (token) {
+          const [profileRes, guildsRes] = await Promise.all([
+            fetch('https://discord.com/api/users/@me', {
+              headers: { Authorization: `Bearer ${token}` },
+              next: { revalidate: 60 },
+            }),
+            fetch('https://discord.com/api/users/@me/guilds', {
+              headers: { Authorization: `Bearer ${token}` },
+              next: { revalidate: 60 },
+            }),
+          ]);
+          if (profileRes.ok) profile = await profileRes.json();
+          else errorMsg = `Discord API error (${profileRes.status}). Try logging out and back in.`;
+          if (guildsRes.ok) guilds = await guildsRes.json();
+        } else {
+          errorMsg = 'No access token found. Try logging out and back in.';
+        }
+      } else {
+        errorMsg = 'No linked account found. Try logging out and back in.';
+      }
+    } catch (e) {
+      console.error(e);
+      errorMsg = 'Failed to load profile.';
+    }
   }
 
   // ── Error state ──────────────────────────────────────────────────────────────
@@ -155,13 +171,37 @@ export default async function Page() {
   return (
     <div className={styles.container}>
 
+      {isDemo && (
+        <div style={{
+          background: 'linear-gradient(90deg, rgba(88,101,242,0.15), rgba(255,115,250,0.15))',
+          border: '1px solid rgba(88,101,242,0.3)',
+          borderRadius: '12px',
+          padding: '1rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+          marginBottom: '0.5rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Icons.Crown style={{ color: '#ff73fa' }} size={20} />
+            <div>
+              <p style={{ margin: 0, fontWeight: 700, color: '#fff', fontSize: '0.9rem' }}>You are viewing the dashboard in Demo Mode</p>
+              <p style={{ margin: '2px 0 0', color: '#949ba4', fontSize: '0.8rem' }}>Interact with mock Coral metrics and ask Grok anything about your server data.</p>
+            </div>
+          </div>
+          <ConnectDemoButton />
+        </div>
+      )}
+
       {/* ── Page Header ───────────────────────────────────────────────── */}
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.headerTitle}>
             Welcome back, {profile.global_name || profile.username}!
           </h1>
-          <p className={styles.headerSubtitle}>Discord Identity Dashboard · Connected via OAuth</p>
+          <p className={styles.headerSubtitle}>Discord Identity Dashboard · Connected via {isDemo ? 'Demo Mode' : 'OAuth'}</p>
         </div>
       </div>
 
@@ -197,7 +237,7 @@ export default async function Page() {
                   background: '#5865F2', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '2.25rem', fontWeight: 700, color: '#fff',
                 }}>
-                  {(profile.global_name || profile.username).charAt(0).toUpperCase()}
+                  {[...(profile.global_name || profile.username)][0]?.toUpperCase()}
                 </div>
               )}
               {/* Online dot */}
@@ -435,7 +475,7 @@ export default async function Page() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontWeight: 700, fontSize: '1.1rem',
                     }}>
-                      {guild.name.charAt(0)}
+                      {[...guild.name][0]?.toUpperCase()}
                     </div>
                   )}
                   <div style={{ minWidth: 0 }}>

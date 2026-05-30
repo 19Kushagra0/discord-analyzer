@@ -150,3 +150,53 @@
   text-decoration: underline;
   color: #7983f5;
 }
+
+/* Stacked Demo Button styling */
+.demoBtn {
+  width: 100%;
+  height: 44px;
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(88, 101, 242, 0.45);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.demoBtn:hover {
+  background-color: rgba(88, 101, 242, 0.08);
+  border-color: rgba(255, 115, 250, 0.55);
+  box-shadow: 0 0 16px rgba(255, 115, 250, 0.2);
+}
+
+.demoBtn:active {
+  transform: scale(0.98);
+}
+
+.demoBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 115, 250, 0.4);
+}
+
+/* Back to Home link */
+.backHome {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #6d7078;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.backHome:hover {
+  color: #b5bac1;
+}
