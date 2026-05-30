@@ -10,7 +10,7 @@ export function executeSQL(query, dataContext) {
   const cleanQuery = query.replace(/\s+/g, ' ').trim();
   
   // Basic SELECT parsing regex
-  const selectRegex = /^SELECT\s+(.*?)\s+FROM\s+(\w+)(?:\s+WHERE\s+(.*?))?(?:\s+ORDER\s+BY\s+(.*?))?(?:\s+LIMIT\s+(\d+))?$/i;
+  const selectRegex = /^SELECT\s+(.*?)\s+FROM\s+(\w+)(?:\s+JOIN\s+[\w\s_]+?\s+ON\s+[\w\._=]+?)?(?:\s+WHERE\s+(.*?))?(?:\s+ORDER\s+BY\s+(.*?))?(?:\s+LIMIT\s+(\d+))?$/i;
   const match = cleanQuery.match(selectRegex);
 
   if (!match) {
