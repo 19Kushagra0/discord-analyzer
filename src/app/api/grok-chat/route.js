@@ -6,15 +6,28 @@ export async function POST(req) {
   try {
     const { question, profile, servers } = await req.json();
 
-    // 1. Gracefully handle missing XAI_API_KEY
-    if (!process.env.XAI_API_KEY) {
+    const apiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
+
+    // 1. Gracefully handle missing API key
+    if (!apiKey) {
       return new Response(
         JSON.stringify({
-          error: "XAI_API_KEY is not configured in your .env.local file.\n\nPlease sign up at console.x.ai, generate a key, and add it to your environment variables to enable Grok's brain."
+          error: "XAI_API_KEY or GROK_API_KEY is not configured in your .env.local file.\n\nPlease configure your environment variables to enable Grok's brain."
         }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
+
+    // Auto-detect Provider (xAI vs Groq Cloud) based on API Key prefix
+    // Groq Cloud keys start with "gsk_"
+    const isGroqProvider = apiKey.startsWith("gsk_");
+    const providerApiUrl = isGroqProvider 
+      ? 'https://api.groq.com/openai/v1/chat/completions' 
+      : 'https://api.x.ai/v1/chat/completions';
+    const providerModel = isGroqProvider 
+      ? 'llama-3.3-70b-versatile' 
+      : 'grok-3';
+    const providerName = isGroqProvider ? 'Groq Cloud' : 'xAI';
 
     if (!question) {
       return new Response(
@@ -57,14 +70,14 @@ CRITICAL RULES for Coral SQL dialect:
 6. Respond with ONLY the SQL query in a clean text format. Do NOT wrap it in backticks, markdown, or explain it. Just output the query string directly.
 `;
 
-    const sqlResponse = await fetch('https://api.x.ai/v1/chat/completions', {
+    const sqlResponse = await fetch(providerApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.XAI_API_KEY}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'grok-3',
+        model: providerModel,
         messages: [
           { role: 'system', content: systemPromptSQL },
           { role: 'user', content: question }
@@ -77,7 +90,7 @@ CRITICAL RULES for Coral SQL dialect:
     if (!sqlResponse.ok) {
       const errText = await sqlResponse.text();
       return new Response(
-        JSON.stringify({ error: `xAI API call failed: ${errText}` }),
+        JSON.stringify({ error: `${providerName} API call failed: ${errText}` }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
@@ -127,14 +140,14 @@ ${JSON.stringify(sqlResult.rows, null, 2)}
 Provide your witty 2-4 sentence analysis.`;
     }
 
-    const analysisResponse = await fetch('https://api.x.ai/v1/chat/completions', {
+    const analysisResponse = await fetch(providerApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.XAI_API_KEY}`
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'grok-3',
+        model: providerModel,
         messages: [
           { role: 'system', content: systemPromptAnalysis },
           { role: 'user', content: userAnalysisContent }
@@ -147,7 +160,7 @@ Provide your witty 2-4 sentence analysis.`;
     if (!analysisResponse.ok) {
       const errText = await analysisResponse.text();
       return new Response(
-        JSON.stringify({ error: `xAI Analysis call failed: ${errText}` }),
+        JSON.stringify({ error: `${providerName} Analysis call failed: ${errText}` }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }

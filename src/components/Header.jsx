@@ -1,18 +1,30 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import styles from '@/styles/header.module.css';
 import * as Icons from '@/components/Icons';
 
 export default function Header({ onToggleSidebar, isSidebarOpen }) {
+  const pathname = usePathname();
+
+  // Determine dynamic title based on path
+  let headerTitle = "Meridian";
+  if (pathname === "/dashboard" || pathname === "/") {
+    headerTitle = "Dashboard";
+  } else if (pathname === "/personal-servers") {
+    headerTitle = "Your Servers";
+  } else if (pathname === "/coral-query") {
+    headerTitle = "AI Powered Coral SQL Console";
+  }
+
   return (
     <header className={styles.header}>
       <div className={styles.leftSection}>
-        <Link href="/" className={styles.logo} style={{ textDecoration: 'none' }}>Meridian</Link>
-        {/* Command Bar (Sunken) */}
-        <div className={styles.searchBar}>
-          <Icons.Search className={styles.searchIcon} />
-          <input className={styles.searchInput} placeholder="Search prompts, evals, or logs... (⌘K)" type="text" />
-        </div>
+        <Link href="/" className={styles.logo} style={{ textDecoration: 'none' }}>
+          {headerTitle}
+        </Link>
       </div>
       <div className={styles.rightSection}>
         {/* <div className={styles.envPill}>
@@ -29,4 +41,3 @@ export default function Header({ onToggleSidebar, isSidebarOpen }) {
     </header>
   );
 }
-
