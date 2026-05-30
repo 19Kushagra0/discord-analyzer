@@ -106,6 +106,29 @@
   opacity: 0.8;
 }
 
+.logoutTab {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--color-on-surface-variant, #949ba4);
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-family: var(--font-body-sm), sans-serif;
+  font-size: var(--text-body-sm, 0.875rem);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.logoutTab:hover {
+  color: #f23f42;
+  background-color: rgba(242, 63, 66, 0.1);
+}
+
+.logoutTab:active {
+  opacity: 0.8;
+}
+
 .activeTab {
   display: flex;
   align-items: center;
