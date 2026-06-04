@@ -110,9 +110,4 @@ Community managers often fly blind, relying on anecdotal feelings to gauge serve
 - [ ] **Automated Alerting:** Set up natural-language-defined cron jobs (e.g., "Alert me if sentiment drops by 20%").
 - [ ] **Data Export:** PDF and CSV report generation for weekly community wrap-ups.
 
-## Contact
-**Kushagra**  
-- **LinkedIn:** [linkedin.com/in/yourprofile](#)  
-- **Portfolio:** [yourportfolio.dev](#)  
-- **Email:** [hello@yourdomain.com](mailto:hello@yourdomain.com)  
-- **GitHub:** [@19Kushagra0](https://github.com/19Kushagra0)
+
