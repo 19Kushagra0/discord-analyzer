@@ -1,12 +1,54 @@
-<div align="center">
+# CoralStats: AI-Powered Discord Analytics 🌊
 
-```
-  ██████╗ ██████╗ ██████╗  █████╗ ██╗     ███████╗████████╗ █████╗ ████████╗███████╗
- ██╔════╝██╔═══██╗██╔══██╗██╔══██╗██║     ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝
- ██║     ██║   ██║██████╔╝███████║██║     ███████╗   ██║   ███████║   ██║   ███████╗
- ██║     ██║   ██║██╔══██╗██╔══██║██║     ╚════██║   ██║   ██╔══██║   ██║   ╚════██║
- ╚██████╗╚██████╔╝██║  ██║██║  ██║███████╗███████║   ██║   ██║  ██║   ██║   ███████║
-  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝
+[![Live Demo](https://img.shields.io/badge/Live-Demo-2ea44f?style=for-the-badge)](https://discord-analyzer-demo.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.6-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)](#)
+
+## Description
+CoralStats is an enterprise-grade analytics command center that turns raw Discord community data into actionable insights through semantic search and AI. Built for community managers and developers, it ingests massive unstructured chat histories, indexes them using advanced retrieval-augmented generation (RAG), and allows users to query their server's knowledge base in plain English. The platform scales to handle tens of thousands of messages, reducing the time spent searching for historical context or debugging community trends from hours to milliseconds.
+
+## Key Features
+- **Semantic Search & RAG Chatbot:** Ask complex questions about past community discussions (e.g., "What was the community consensus on the latest pricing update?") and get highly accurate, cited answers.
+- **Local-First SQL Engine (Coral):** Run cross-source SQL queries across Discord APIs and internal data directly in the browser—treating live APIs as relational database tables.
+- **Enterprise-Grade Identity Dashboard:** Full Discord profile and server decoding, visualizing role hierarchies, permission bitfields, and real-time member engagement.
+- **Streaming LLM Responses:** Integrated with Next.js Edge Functions to stream responses word-by-word with zero layout shift, ensuring a snappy, fluid user experience.
+- **Self-Healing Demo Mode:** A robust fallback mode backed by seeded Firestore data, allowing recruiters and users to test the full analytics suite without needing to authenticate.
+
+## Tech Stack
+
+| Technology | Purpose & Justification |
+|------------|-------------------------|
+| **Next.js 16 (App Router)** | Provides robust server-side rendering, Edge API routes for streaming, and highly optimized routing. |
+| **Tailwind CSS v4** | Enables rapid, utility-first styling with a modern glassmorphism design system. |
+| **Pinecone** | Serverless vector database chosen for its sub-50ms query latency, crucial for real-time RAG applications. |
+| **OpenAI `text-embedding-3-small`** | Highly cost-effective and dimensionally dense embedding model, providing superior semantic capture over older iterations. |
+| **Llama 3.3 70B (via Groq)** | Powers the generation step. Chosen for its blazing fast inference speed (~800 tokens/sec), ensuring immediate chat responses. |
+| **Firebase / NextAuth.js** | Manages robust JWT-based sessions and securely stores user metadata and OAuth configurations. |
+
+## RAG Architecture
+
+Our RAG pipeline is designed to minimize hallucination and maximize retrieval relevance when querying messy, unstructured Discord chat logs.
+
+- **Ingestion & Chunking:** Discord messages are pulled via the Discord API. We use a **Semantic Chunking** strategy, grouping messages by temporal proximity and conversation threads rather than arbitrary character counts. This prevents context shearing.
+- **Embedding:** Chunks are vectorized using OpenAI's `text-embedding-3-small` model, producing 1536-dimensional vectors.
+- **Vector Database:** Vectors and their associated metadata (author, timestamp, channel ID) are upserted into **Pinecone**, which enables highly scalable nearest-neighbor search.
+- **Retrieval:** When a user asks a question, the query is embedded and passed to Pinecone. We utilize **Hybrid Search** (Dense + Sparse/BM25) to ensure we capture both semantic intent and exact keyword matches (vital for usernames or specific error codes). 
+- **Generation:** The top-K retrieved chunks are injected into a strict system prompt instructing the LLM (Llama 3.3 via Groq) to synthesize an answer exclusively using the provided context, complete with inline citations.
+
+### Pipeline Flow
+
+```mermaid
+graph TD;
+    A[Discord API / Webhooks] -->|Raw Messages| B(Data Cleaning & Threading);
+    B -->|Semantic Chunking| C[OpenAI text-embedding-3-small];
+    C -->|1536-d Vectors| D[(Pinecone Vector DB)];
+    
+    E[User Query] --> F[Query Embedding];
+    F -->|Hybrid Search| D;
+    D -->|Top-K Context Chunks| G[Prompt Injection];
+    G -->|Context + Query| H[Groq Llama-3.3 70B];
+    H -->|Streamed Output| I[Next.js Client UI];
 ```
 
 ### **AI-Powered Discord Analytics Data Layer**
