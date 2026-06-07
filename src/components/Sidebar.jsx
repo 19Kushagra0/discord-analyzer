@@ -52,6 +52,12 @@ export default function Sidebar({ isOpen, onClose }) {
           <span>Coral SQL Console</span>
         </Link>
 
+        {/* Tab: Ask Grok */}
+        <Link className={getTabClass('/ask-grok')} href={getLinkHref('/ask-grok')} onClick={onClose}>
+          <Icons.MessageSquare className={styles.tabIcon} />
+          <span>Ask Grok</span>
+        </Link>
+
         {/* Logout Button */}
         {isDemo ? (
           <Link
