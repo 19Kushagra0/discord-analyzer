@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import DemoModal from './DemoModal';
+import { Bot } from 'lucide-react';
 
 export default function InviteBotButton({ isDemo, clientId, guildId }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,27 +18,27 @@ export default function InviteBotButton({ isDemo, clientId, guildId }) {
 
   return (
     <>
-      <a 
+      <a
         href={isDemo ? "#" : inviteUrl}
         onClick={handleClick}
         target={isDemo ? undefined : "_blank"}
         rel={isDemo ? undefined : "noopener noreferrer"}
-        style={{ 
-          fontSize: '0.75rem', 
-          fontWeight: 700, 
-          color: '#fff', 
-          padding: '4px 10px', 
-          borderRadius: '10px', 
-          background: '#5865F2', 
-          border: '1px solid #4752c4', 
-          textDecoration: 'none', 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '4px', 
-          cursor: 'pointer' 
+        style={{
+          fontSize: '0.75rem',
+          fontWeight: 700,
+          color: '#fff',
+          padding: '4px 10px',
+          borderRadius: '10px',
+          background: '#5865F2',
+          border: '1px solid #4752c4',
+          textDecoration: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          cursor: 'pointer',
         }}
       >
-        🤖 Invite Bot
+        <Bot size={13} /> Invite Bot
       </a>
 
       <DemoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

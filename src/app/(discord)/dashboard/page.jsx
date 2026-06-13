@@ -12,18 +12,18 @@ import { redirect } from 'next/navigation';
 function getDiscordBadges(flags) {
   if (!flags) return [];
   const badges = [];
-  if (flags & 1)       badges.push({ label: 'Discord Staff',          emoji: '🛠️' });
-  if (flags & 2)       badges.push({ label: 'Partnered Server Owner', emoji: '🤝' });
-  if (flags & 4)       badges.push({ label: 'HypeSquad Events',       emoji: '🎉' });
-  if (flags & 8)       badges.push({ label: 'Bug Hunter Lv.1',        emoji: '🐛' });
-  if (flags & 64)      badges.push({ label: 'House Bravery',          emoji: '🛡️' });
-  if (flags & 128)     badges.push({ label: 'House Brilliance',       emoji: '✨' });
-  if (flags & 256)     badges.push({ label: 'House Balance',          emoji: '⚖️' });
-  if (flags & 512)     badges.push({ label: 'Early Supporter',        emoji: '💎' });
-  if (flags & 16384)   badges.push({ label: 'Bug Hunter Lv.2',        emoji: '🐞' });
-  if (flags & 65536)   badges.push({ label: 'Verified Bot Dev',       emoji: '💻' });
-  if (flags & 131072)  badges.push({ label: 'Certified Moderator',    emoji: '🛡️' });
-  if (flags & 4194304) badges.push({ label: 'Active Developer',       emoji: '⚙️' });
+  if (flags & 1)       badges.push({ label: 'Discord Staff',          emoji: <Icons.Shield size={14} style={{ color: '#5865F2' }} /> });
+  if (flags & 2)       badges.push({ label: 'Partnered Server Owner', emoji: <Icons.Crown size={14} style={{ color: '#f1c40f' }} /> });
+  if (flags & 4)       badges.push({ label: 'HypeSquad Events',       emoji: <Icons.Zap size={14} style={{ color: '#f39c12' }} /> });
+  if (flags & 8)       badges.push({ label: 'Bug Hunter Lv.1',        emoji: <Icons.Search size={14} style={{ color: '#2ecc71' }} /> });
+  if (flags & 64)      badges.push({ label: 'House Bravery',          emoji: <Icons.Shield size={14} style={{ color: '#9b59b6' }} /> });
+  if (flags & 128)     badges.push({ label: 'House Brilliance',       emoji: <Icons.Star size={14} style={{ color: '#e74c3c' }} /> });
+  if (flags & 256)     badges.push({ label: 'House Balance',          emoji: <Icons.Activity size={14} style={{ color: '#3498db' }} /> });
+  if (flags & 512)     badges.push({ label: 'Early Supporter',        emoji: <Icons.Flame size={14} style={{ color: '#ff73fa' }} /> });
+  if (flags & 16384)   badges.push({ label: 'Bug Hunter Lv.2',        emoji: <Icons.Terminal size={14} style={{ color: '#e67e22' }} /> });
+  if (flags & 65536)   badges.push({ label: 'Verified Bot Dev',       emoji: <Icons.Settings size={14} style={{ color: '#5865F2' }} /> });
+  if (flags & 131072)  badges.push({ label: 'Certified Moderator',    emoji: <Icons.CheckCircle2 size={14} style={{ color: '#2ecc71' }} /> });
+  if (flags & 4194304) badges.push({ label: 'Active Developer',       emoji: <Icons.Terminal size={14} style={{ color: '#23a55a' }} /> });
   return badges;
 }
 
@@ -162,7 +162,7 @@ export default async function Page({ searchParams }) {
   const nitro      = nitroLabel(nitroTier);
   const avatarUrl  = profile.avatar
     ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png?size=256`
-    : null;
+    : (isDemo ? '/demo-avatar.png' : null);
   const bannerUrl  = profile.banner
     ? `https://cdn.discordapp.com/banners/${profile.id}/${profile.banner}.png?size=600`
     : null;
@@ -173,23 +173,23 @@ export default async function Page({ searchParams }) {
 
       {isDemo && (
         <div style={{
-          background: 'linear-gradient(90deg, rgba(88,101,242,0.15), rgba(255,115,250,0.15))',
-          border: '1px solid rgba(88,101,242,0.3)',
-          borderRadius: '12px',
-          padding: '1rem 1.5rem',
+          borderLeft: '3px solid #5865F2',
+          background: 'rgba(88,101,242,0.06)',
+          borderRadius: '0 8px 8px 0',
+          padding: '0.75rem 1.25rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
           gap: '1rem',
-          marginBottom: '0.5rem'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Icons.Crown style={{ color: '#ff73fa' }} size={20} />
-            <div>
-              <p style={{ margin: 0, fontWeight: 700, color: '#fff', fontSize: '0.9rem' }}>You are viewing the dashboard in Demo Mode</p>
-              <p style={{ margin: '2px 0 0', color: '#949ba4', fontSize: '0.8rem' }}>Interact with mock Coral metrics and ask Grok anything about your server data.</p>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            <Icons.Crown style={{ color: '#5865F2', flexShrink: 0 }} size={16} />
+            <p style={{ margin: 0, color: '#949ba4', fontSize: '0.8125rem' }}>
+              <span style={{ color: '#dbdee1', fontWeight: 600 }}>Demo Mode</span>
+              {' — '}
+              Interact with mock Coral metrics and ask Grok anything.
+            </p>
           </div>
           <ConnectDemoButton />
         </div>
@@ -199,9 +199,9 @@ export default async function Page({ searchParams }) {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.headerTitle}>
-            Welcome back, {profile.global_name || profile.username}!
+            {profile.global_name || profile.username}
           </h1>
-          <p className={styles.headerSubtitle}>Discord Identity Dashboard · Connected via {isDemo ? 'Demo Mode' : 'OAuth'}</p>
+          <p className={styles.headerSubtitle}>@{profile.username} · Discord Identity · {isDemo ? 'Demo Mode' : 'OAuth'}</p>
         </div>
       </div>
 
@@ -210,7 +210,7 @@ export default async function Page({ searchParams }) {
         borderColor: accentHex ? `${accentHex}55` : 'rgba(88,101,242,0.2)',
         overflow: 'visible',
       }}>
-        {/* Banner */}
+        {/* Banner — rich mesh gradient fallback */}
         <div style={{
           position: 'absolute', top: 0, left: 0, right: 0, height: '110px',
           borderRadius: '16px 16px 0 0', overflow: 'hidden', zIndex: 1,
@@ -218,7 +218,13 @@ export default async function Page({ searchParams }) {
           {bannerUrl ? (
             <img src={bannerUrl} alt="banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <div style={{ width: '100%', height: '100%', backgroundColor: bannerColor, opacity: 0.7 }} />
+            <div style={{
+              width: '100%', height: '100%',
+              background: `radial-gradient(ellipse at 20% 50%, ${bannerColor}55 0%, transparent 60%),
+                           radial-gradient(ellipse at 80% 20%, ${bannerColor}33 0%, transparent 55%),
+                           radial-gradient(ellipse at 60% 80%, rgba(255,115,250,0.15) 0%, transparent 50%),
+                           linear-gradient(135deg, ${bannerColor}22 0%, #1e1f2299 100%)`,
+            }} />
           )}
         </div>
 
@@ -453,9 +459,11 @@ export default async function Page({ searchParams }) {
             padding: '1.25rem',
           }}>
             {guilds.map((guild) => {
-              const icon = guild.icon
-                ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
-                : null;
+              const iconSrc = guild.iconUrl
+                ? guild.iconUrl
+                : guild.icon
+                  ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
+                  : null;
               return (
                 <div key={guild.id} style={{
                   display: 'flex', alignItems: 'center', gap: '0.75rem',
@@ -465,9 +473,9 @@ export default async function Page({ searchParams }) {
                   border: '1px solid rgba(255,255,255,0.06)',
                   transition: 'border-color 0.2s, transform 0.2s',
                 }}>
-                  {icon ? (
-                    <img src={icon} alt={guild.name}
-                      style={{ width: '42px', height: '42px', borderRadius: '50%', flexShrink: 0 }} />
+                  {iconSrc ? (
+                    <img src={iconSrc} alt={guild.name}
+                      style={{ width: '42px', height: '42px', borderRadius: '50%', flexShrink: 0, objectFit: 'cover' }} />
                   ) : (
                     <div style={{
                       width: '42px', height: '42px', borderRadius: '50%', flexShrink: 0,
