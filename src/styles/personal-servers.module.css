@@ -1,0 +1,253 @@
+/* src/styles/personal-servers.module.css */
+
+.serverCard {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  background: #2b2d31;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.serverBanner {
+  height: 140px;
+  background: linear-gradient(135deg, #3c3f8e 0%, #1e1f22 60%, #2b2d31 100%);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.serverIconContainer {
+  position: absolute;
+  bottom: -28px;
+  left: 28px;
+}
+
+.serverIcon {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  border: 4px solid #2b2d31;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.serverIconPlaceholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  border: 4px solid #2b2d31;
+  background: linear-gradient(135deg, #5865F2, #4752c4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.75rem;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.serverMeta {
+  padding: 44px 28px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metaHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.metaBadgeRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.statsRow {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.detailsRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.innerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.permsCol {
+  padding: 1.5rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.featuresCol {
+  padding: 1.5rem;
+}
+
+.rolesSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+
+.channelsSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.channelsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem 0.5rem;
+}
+
+.channelsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0;
+  padding: 0 0 1rem;
+}
+
+.subChannelsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.engagementSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+}
+
+.engagementGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.cardFooter {
+  padding: 0.875rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .innerGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .permsCol {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .serverMeta {
+    padding: 44px 20px 20px;
+  }
+  
+  .statsRow {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .serverMeta {
+    padding: 40px 16px 16px;
+  }
+
+  .metaHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .metaBadgeRow {
+    justify-content: flex-start;
+  }
+
+  .statsRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .permsCol,
+  .featuresCol,
+  .rolesSection,
+  .channelsHeader,
+  .engagementSection,
+  .cardFooter {
+    padding: 1.25rem 1rem;
+  }
+
+  .channelsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .subChannelsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .engagementGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .serverBanner {
+    height: 100px;
+  }
+
+  .serverIconContainer {
+    bottom: -20px;
+    left: 16px;
+  }
+
+  .serverIcon,
+  .serverIconPlaceholder {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    border-width: 3px;
+  }
+
+  .serverIconPlaceholder {
+    font-size: 1.25rem;
+  }
+
+  .serverMeta {
+    padding: 32px 12px 12px;
+  }
+
+  .detailsRow {
+    gap: 6px;
+  }
+
+  .detailsRow > div {
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .permsCol,
+  .featuresCol,
+  .rolesSection,
+  .channelsHeader,
+  .engagementSection,
+  .cardFooter {
+    padding: 1rem 0.75rem;
+  }
+}

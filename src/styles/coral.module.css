@@ -615,3 +615,198 @@
   }
 }
 
+/* ── Responsive ────────────────────────────────────────────── */
+
+/* Tablet — collapse sidebar below layout */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .schemaBrowser {
+    order: 2; /* push schema browser below console */
+  }
+
+  .consoleArea {
+    order: 1;
+  }
+
+  .chatContainer {
+    height: 420px;
+  }
+}
+
+/* Mobile — tight layout */
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .headerTitle {
+    font-size: 1.2rem;
+  }
+
+  .headerSubtitle {
+    font-size: 0.8rem;
+  }
+
+  .editorFooter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .quickQueries {
+    justify-content: flex-start;
+  }
+
+  .btnRun {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .starterChips {
+    grid-template-columns: 1fr;
+  }
+
+  .chatContainer {
+    height: 380px;
+  }
+
+  .chatMessage {
+    max-width: 95%;
+  }
+
+  .dataTable th,
+  .dataTable td {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.78rem;
+  }
+}
+
+/* 360px — extreme narrow */
+@media (max-width: 380px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  .headerTitle {
+    font-size: 1.05rem;
+    gap: 6px;
+  }
+
+  .headerSubtitle {
+    font-size: 0.75rem;
+  }
+
+  .schemaBrowser {
+    padding: 0.75rem;
+  }
+
+  .browserTitle {
+    font-size: 0.72rem;
+  }
+
+  .tableName {
+    font-size: 0.78rem;
+  }
+
+  .columnItem {
+    font-size: 0.7rem;
+  }
+
+  .sqlEditor {
+    font-size: 0.82rem;
+    height: 100px;
+  }
+
+  .editorHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 0.625rem 0.75rem;
+  }
+
+  .editorFooter {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .queryChip {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .btnRun {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .resultsCard {
+    padding: 0.875rem 0.75rem;
+  }
+
+  .dataTable th,
+  .dataTable td {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .chatContainer {
+    height: 340px;
+  }
+
+  .chatPanel {
+    padding: 0.875rem 0.75rem;
+    gap: 0.875rem;
+  }
+
+  .bubble {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.82rem;
+  }
+
+  .chatInputBar {
+    padding: 0.625rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .chatInputField {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .emptyStateTitle {
+    font-size: 1rem;
+  }
+
+  .emptyStateText {
+    font-size: 0.78rem;
+  }
+
+  .starterChip {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .configTextarea {
+    font-size: 0.75rem;
+    height: 200px;
+  }
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from '@/styles/dashboard.module.css';
+import serverStyles from '@/styles/personal-servers.module.css';
 import * as Icons from '@/components/Icons';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
@@ -90,49 +91,49 @@ const CAT_STYLES = {
   general: { bg: 'rgba(255,255,255,0.05)',color: '#b9bbbe', border: 'rgba(255,255,255,0.10)' },
 };
 
-// Channel type → icon emoji & label
+// Channel type → icon component & label
 function channelTypeInfo(type) {
   switch (type) {
-    case 0:  return { emoji: '#', label: 'Text Channel',    color: '#80848e' };
-    case 2:  return { emoji: '🔊', label: 'Voice Channel',   color: '#80848e' };
-    case 4:  return { emoji: '📂', label: 'Category',        color: '#fff'    };
-    case 5:  return { emoji: '📢', label: 'Announcement',    color: '#80848e' };
-    case 10: return { emoji: '🧵', label: 'News Thread',     color: '#80848e' };
-    case 11: return { emoji: '🧵', label: 'Public Thread',   color: '#80848e' };
-    case 12: return { emoji: '🔒', label: 'Private Thread',  color: '#80848e' };
-    case 13: return { emoji: '🎙️', label: 'Stage Channel',  color: '#80848e' };
-    case 15: return { emoji: '📋', label: 'Forum Channel',   color: '#80848e' };
-    case 16: return { emoji: '📺', label: 'Media Channel',   color: '#80848e' };
-    default: return { emoji: '❓', label: `Type ${type}`,   color: '#80848e' };
+    case 0:  return { iconName: 'Hash',      label: 'Text Channel',    color: '#80848e' };
+    case 2:  return { iconName: 'Radio',     label: 'Voice Channel',   color: '#80848e' };
+    case 4:  return { iconName: 'Folder',    label: 'Category',        color: '#fff'    };
+    case 5:  return { iconName: 'Megaphone', label: 'Announcement',    color: '#80848e' };
+    case 10: return { iconName: 'Lock',      label: 'News Thread',     color: '#80848e' };
+    case 11: return { iconName: 'Lock',      label: 'Public Thread',   color: '#80848e' };
+    case 12: return { iconName: 'Lock',      label: 'Private Thread',  color: '#80848e' };
+    case 13: return { iconName: 'Mic2',      label: 'Stage Channel',   color: '#80848e' };
+    case 15: return { iconName: 'LayoutGrid',label: 'Forum Channel',   color: '#80848e' };
+    case 16: return { iconName: 'Tv',        label: 'Media Channel',   color: '#80848e' };
+    default: return { iconName: 'HelpCircle',label: `Type ${type}`,   color: '#80848e' };
   }
 }
 
-// Feature → { label, emoji, colour }
+// Feature → { label, iconName, colour }
 function decodeFeature(f) {
   const MAP = {
-    COMMUNITY:                     { label: 'Community Server',       emoji: '🏘️', color: '#23a55a' },
-    VERIFIED:                      { label: 'Verified',               emoji: '✅', color: '#23a55a' },
-    PARTNERED:                     { label: 'Discord Partner',        emoji: '🤝', color: '#5865F2' },
-    DISCOVERABLE:                  { label: 'Server Discovery',       emoji: '🔍', color: '#5865F2' },
-    FEATURABLE:                    { label: 'Featurable',             emoji: '⭐', color: '#ffab1a' },
-    INVITE_SPLASH:                 { label: 'Custom Invite Splash',   emoji: '🎨', color: '#7289da' },
-    BANNER:                        { label: 'Server Banner',          emoji: '🖼️', color: '#7289da' },
-    ANIMATED_ICON:                 { label: 'Animated Icon',          emoji: '✨', color: '#ff73fa' },
-    ANIMATED_BANNER:               { label: 'Animated Banner',        emoji: '🎞️', color: '#ff73fa' },
-    VANITY_URL:                    { label: 'Vanity URL',             emoji: '🔗', color: '#ffab1a' },
-    WELCOME_SCREEN_ENABLED:        { label: 'Welcome Screen',         emoji: '👋', color: '#23a55a' },
-    MEMBER_VERIFICATION_GATE_ENABLED:{ label: 'Membership Screening',emoji: '🛡️', color: '#f0b232' },
-    PREVIEW_ENABLED:               { label: 'Server Preview',         emoji: '👁️', color: '#949ba4' },
-    MONETIZATION_ENABLED:          { label: 'Monetization',           emoji: '💰', color: '#ffab1a' },
-    MORE_STICKERS:                 { label: 'More Sticker Slots',     emoji: '🎭', color: '#ff73fa' },
-    MORE_EMOJI:                    { label: 'Extra Emoji Slots',      emoji: '😄', color: '#ff73fa' },
-    TICKETED_EVENTS_ENABLED:       { label: 'Ticketed Events',        emoji: '🎟️', color: '#5865F2' },
-    ROLE_SUBSCRIPTIONS_ENABLED:    { label: 'Role Subscriptions',     emoji: '💎', color: '#ff73fa' },
-    NEWS:                          { label: 'News Channels',          emoji: '📰', color: '#949ba4' },
-    ENABLED_DISCOVERABLE_BEFORE:   { label: 'Had Discovery',         emoji: '📡', color: '#949ba4' },
-    BOT_DEVELOPER_PORTAL:          { label: 'Bot Dev Portal',         emoji: '⚙️', color: '#7289da' },
+    COMMUNITY:                     { label: 'Community Server',       iconName: 'Globe',      color: '#23a55a' },
+    VERIFIED:                      { label: 'Verified',               iconName: 'CheckCircle2', color: '#23a55a' },
+    PARTNERED:                     { label: 'Discord Partner',        iconName: 'Link2',      color: '#5865F2' },
+    DISCOVERABLE:                  { label: 'Server Discovery',       iconName: 'Search',     color: '#5865F2' },
+    FEATURABLE:                    { label: 'Featurable',             iconName: 'Star',       color: '#ffab1a' },
+    INVITE_SPLASH:                 { label: 'Custom Invite Splash',   iconName: 'Rocket',     color: '#7289da' },
+    BANNER:                        { label: 'Server Banner',          iconName: 'LayoutGrid', color: '#7289da' },
+    ANIMATED_ICON:                 { label: 'Animated Icon',          iconName: 'Zap',        color: '#ff73fa' },
+    ANIMATED_BANNER:               { label: 'Animated Banner',        iconName: 'Tv',         color: '#ff73fa' },
+    VANITY_URL:                    { label: 'Vanity URL',             iconName: 'Link2',      color: '#ffab1a' },
+    WELCOME_SCREEN_ENABLED:        { label: 'Welcome Screen',         iconName: 'Users',      color: '#23a55a' },
+    MEMBER_VERIFICATION_GATE_ENABLED:{ label: 'Membership Screening', iconName: 'Shield',     color: '#f0b232' },
+    PREVIEW_ENABLED:               { label: 'Server Preview',         iconName: 'Search',     color: '#949ba4' },
+    MONETIZATION_ENABLED:          { label: 'Monetization',           iconName: 'TrendingUp', color: '#ffab1a' },
+    MORE_STICKERS:                 { label: 'More Sticker Slots',     iconName: 'Tag',        color: '#ff73fa' },
+    MORE_EMOJI:                    { label: 'Extra Emoji Slots',      iconName: 'Flame',      color: '#ff73fa' },
+    TICKETED_EVENTS_ENABLED:       { label: 'Ticketed Events',        iconName: 'Globe',      color: '#5865F2' },
+    ROLE_SUBSCRIPTIONS_ENABLED:    { label: 'Role Subscriptions',     iconName: 'Crown',      color: '#ff73fa' },
+    NEWS:                          { label: 'News Channels',          iconName: 'Megaphone',  color: '#949ba4' },
+    ENABLED_DISCOVERABLE_BEFORE:   { label: 'Had Discovery',          iconName: 'Radio',      color: '#949ba4' },
+    BOT_DEVELOPER_PORTAL:          { label: 'Bot Dev Portal',         iconName: 'Settings',   color: '#7289da' },
   };
-  return MAP[f] || { label: f.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' '), emoji: '🔹', color: '#949ba4' };
+  return MAP[f] || { label: f.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' '), iconName: 'Tag', color: '#949ba4' };
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -315,23 +316,23 @@ export default async function Page({ searchParams }) {
 
       {isDemo && (
         <div style={{
-          background: 'linear-gradient(90deg, rgba(88,101,242,0.15), rgba(255,115,250,0.15))',
-          border: '1px solid rgba(88,101,242,0.3)',
-          borderRadius: '12px',
-          padding: '1rem 1.5rem',
+          borderLeft: '3px solid #5865F2',
+          background: 'rgba(88,101,242,0.06)',
+          borderRadius: '0 8px 8px 0',
+          padding: '0.75rem 1.25rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
           gap: '1rem',
-          marginBottom: '0.5rem'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Icons.Crown style={{ color: '#ff73fa' }} size={20} />
-            <div>
-              <p style={{ margin: 0, fontWeight: 700, color: '#fff', fontSize: '0.9rem' }}>You are viewing the dashboard in Demo Mode</p>
-              <p style={{ margin: '2px 0 0', color: '#949ba4', fontSize: '0.8rem' }}>Interact with mock Coral metrics and ask Grok anything about your server data.</p>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            <Icons.Crown style={{ color: '#5865F2', flexShrink: 0 }} size={16} />
+            <p style={{ margin: 0, color: '#949ba4', fontSize: '0.8125rem' }}>
+              <span style={{ color: '#dbdee1', fontWeight: 600 }}>Demo Mode</span>
+              {' — '}
+              Interact with mock Coral metrics and ask Grok anything.
+            </p>
           </div>
           <ConnectDemoButton />
         </div>
@@ -340,9 +341,11 @@ export default async function Page({ searchParams }) {
       {/* ── Page Header ─────────────────────────────────────────────────── */}
       <div className={styles.pageHeader}>
         <div>
-          <h1 className={styles.headerTitle}>👑 Your servers</h1>
+          <h1 className={styles.headerTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Icons.Crown size={20} style={{ color: '#ffd700' }} /> Your Servers
+          </h1>
           <p className={styles.headerSubtitle}>
-            Discord servers you created or own · {ownedServers.length} server{ownedServers.length !== 1 ? 's' : ''} {isDemo ? '(Demo Mode)' : ''}
+            {ownedServers.length} owned guild{ownedServers.length !== 1 ? 's' : ''}{isDemo ? ' · Demo Mode' : ''}
           </p>
         </div>
       </div>
@@ -377,12 +380,12 @@ export default async function Page({ searchParams }) {
             (grouped[perm.cat] = grouped[perm.cat] || []).push(perm.label);
           }
           const CAT_LABELS = {
-            danger: '🔴 Danger Permissions',
-            manage: '🟡 Management',
-            member: '🟠 Member Controls',
-            voice:  '🔵 Voice Permissions',
-            text:   '🟢 Text & Channels',
-            general:'⚪ General',
+            danger: { label: 'Danger Permissions', icon: <Icons.AlertTriangle size={12} style={{ color: CAT_STYLES.danger.color }} /> },
+            manage: { label: 'Management',          icon: <Icons.Settings size={12}      style={{ color: CAT_STYLES.manage.color }} /> },
+            member: { label: 'Member Controls',     icon: <Icons.Users size={12}          style={{ color: CAT_STYLES.member.color }} /> },
+            voice:  { label: 'Voice Permissions',   icon: <Icons.Mic2 size={12}           style={{ color: CAT_STYLES.voice.color }}  /> },
+            text:   { label: 'Text & Channels',     icon: <Icons.Hash size={12}           style={{ color: CAT_STYLES.text.color }}   /> },
+            general:{ label: 'General',             icon: <Icons.Key size={12}            style={{ color: CAT_STYLES.general.color }}/> },
           };
           const CAT_ORDER = ['danger', 'manage', 'member', 'voice', 'text', 'general'];
 
@@ -390,36 +393,16 @@ export default async function Page({ searchParams }) {
             <div key={server.id} style={{ marginBottom: '2rem' }}>
 
               {/* ── Discord-style Server Card ──────────────────────────────── */}
-              <div style={{
-                borderRadius: '16px',
-                border: '1px solid rgba(255,255,255,0.06)',
-                overflow: 'hidden',
-                background: '#2b2d31',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
-              }}>
+              <div className={serverStyles.serverCard}>
 
                 {/* Banner / Cover */}
-                <div style={{
-                  height: '140px',
-                  background: 'linear-gradient(135deg, #3c3f8e 0%, #1e1f22 60%, #2b2d31 100%)',
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                }}>
+                <div className={serverStyles.serverBanner}>
                   {/* Server icon floats on the banner */}
-                  <div style={{ position: 'absolute', bottom: '-28px', left: '28px' }}>
+                  <div className={serverStyles.serverIconContainer}>
                     {iconUrl ? (
-                      <img src={iconUrl} alt={server.name}
-                        style={{ width: '72px', height: '72px', borderRadius: '18px', border: '4px solid #2b2d31', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }} />
+                      <img src={iconUrl} alt={server.name} className={serverStyles.serverIcon} />
                     ) : (
-                      <div style={{
-                        width: '72px', height: '72px', borderRadius: '18px',
-                        border: '4px solid #2b2d31',
-                        background: 'linear-gradient(135deg, #5865F2, #4752c4)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontWeight: 900, fontSize: '1.75rem', color: '#fff',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                      }}>
+                      <div className={serverStyles.serverIconPlaceholder}>
                         {[...server.name][0]?.toUpperCase()}
                       </div>
                     )}
@@ -427,8 +410,8 @@ export default async function Page({ searchParams }) {
                 </div>
 
                 {/* Server Name + meta row */}
-                <div style={{ padding: '44px 28px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div className={serverStyles.serverMeta}>
+                  <div className={serverStyles.metaHeader}>
                     <div>
                       <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>
                         {server.name}
@@ -437,30 +420,30 @@ export default async function Page({ searchParams }) {
                         ID: {server.id}
                       </p>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <InviteBotButton 
-                        isDemo={isDemo} 
-                        clientId={process.env.DISCORD_CLIENT_ID} 
-                        guildId={server.id} 
+                    <div className={serverStyles.metaBadgeRow}>
+                      <InviteBotButton
+                        isDemo={isDemo}
+                        clientId={process.env.DISCORD_CLIENT_ID}
+                        guildId={server.id}
                       />
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#ffd700', padding: '4px 10px', borderRadius: '10px', background: 'rgba(255,215,0,0.1)', border: '1px solid rgba(255,215,0,0.2)' }}>
-                        👑 OWNER
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.72rem', fontWeight: 700, color: '#ffd700', padding: '4px 10px', borderRadius: '10px', background: 'rgba(255,215,0,0.08)', border: '1px solid rgba(255,215,0,0.18)' }}>
+                        <Icons.Crown size={11} style={{ color: '#ffd700' }} /> OWNER
                       </span>
                       {features.find(f => f.label === 'Verified') && (
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#23a55a', padding: '4px 10px', borderRadius: '10px', background: 'rgba(35,165,90,0.1)', border: '1px solid rgba(35,165,90,0.2)' }}>
-                          ✅ VERIFIED
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.72rem', fontWeight: 700, color: '#23a55a', padding: '4px 10px', borderRadius: '10px', background: 'rgba(35,165,90,0.08)', border: '1px solid rgba(35,165,90,0.18)' }}>
+                          <Icons.CheckCircle2 size={11} /> VERIFIED
                         </span>
                       )}
                       {features.find(f => f.label === 'Discord Partner') && (
-                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#5865F2', padding: '4px 10px', borderRadius: '10px', background: 'rgba(88,101,242,0.1)', border: '1px solid rgba(88,101,242,0.2)' }}>
-                          🤝 PARTNER
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.72rem', fontWeight: 700, color: '#5865F2', padding: '4px 10px', borderRadius: '10px', background: 'rgba(88,101,242,0.08)', border: '1px solid rgba(88,101,242,0.18)' }}>
+                          <Icons.Link2 size={11} /> PARTNER
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* Quick stats bar */}
-                  <div style={{ display: 'flex', gap: '2rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                  <div className={serverStyles.statsRow}>
                     {[
                       { icon: <Icons.Clock size={14} />,    label: 'Created',     value: createdStr },
                       { icon: <Icons.Activity size={14} />, label: 'Server Age',  value: age },
@@ -477,12 +460,7 @@ export default async function Page({ searchParams }) {
                   </div>
 
                   {details && (
-                    <div style={{
-                      display: 'flex',
-                      gap: '10px',
-                      marginTop: '1.25rem',
-                      flexWrap: 'wrap',
-                    }}>
+                    <div className={serverStyles.detailsRow}>
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -533,10 +511,10 @@ export default async function Page({ searchParams }) {
                 </div>
 
                 {/* ── Inner 2-col layout ─────────────────────────────────── */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className={serverStyles.innerGrid}>
 
                   {/* Left: Permissions by category */}
-                  <div style={{ padding: '1.5rem', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div className={serverStyles.permsCol}>
                     <h4 style={{ margin: '0 0 1rem', fontSize: '0.75rem', fontWeight: 700, color: '#80848e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                       Your Permissions ({perms.length})
                     </h4>
@@ -545,8 +523,8 @@ export default async function Page({ searchParams }) {
                         const cs = CAT_STYLES[cat];
                         return (
                           <div key={cat}>
-                            <p style={{ margin: '0 0 0.4rem', fontSize: '0.72rem', color: '#80848e', fontWeight: 600 }}>
-                              {CAT_LABELS[cat]}
+                        <p style={{ margin: '0 0 0.4rem', fontSize: '0.72rem', color: cs.color, fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                              {CAT_LABELS[cat].icon} {CAT_LABELS[cat].label}
                             </p>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem' }}>
                               {grouped[cat].map(label => (
@@ -568,11 +546,11 @@ export default async function Page({ searchParams }) {
                   </div>
 
                   {/* Right: Server Features */}
-                  <div style={{ padding: '1.5rem' }}>
+                  <div className={serverStyles.featuresCol}>
                     <h4 style={{ margin: '0 0 1rem', fontSize: '0.75rem', fontWeight: 700, color: '#80848e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                       Server Features ({features.length})
                     </h4>
-                    {features.length === 0 ? (
+                      {features.length === 0 ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <p style={{ margin: 0, fontSize: '0.85rem', color: '#4e5058' }}>No premium features active.</p>
                         <p style={{ margin: 0, fontSize: '0.78rem', color: '#4e5058', lineHeight: 1.5 }}>
@@ -581,27 +559,30 @@ export default async function Page({ searchParams }) {
                       </div>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        {features.map((feat, i) => (
-                          <div key={i} style={{
-                            display: 'flex', alignItems: 'center', gap: '0.625rem',
-                            padding: '0.5rem 0.75rem',
-                            borderRadius: '8px',
-                            background: 'rgba(255,255,255,0.03)',
-                            border: '1px solid rgba(255,255,255,0.06)',
-                          }}>
-                            <span style={{ fontSize: '1rem', lineHeight: 1 }}>{feat.emoji}</span>
-                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: feat.color }}>{feat.label}</span>
-                          </div>
-                        ))}
+                        {features.map((feat, i) => {
+                          const FeatIcon = Icons[feat.iconName] || Icons.Tag;
+                          return (
+                            <div key={i} style={{
+                              display: 'flex', alignItems: 'center', gap: '0.625rem',
+                              padding: '0.5rem 0.75rem',
+                              borderRadius: '8px',
+                              background: 'rgba(255,255,255,0.03)',
+                              border: '1px solid rgba(255,255,255,0.06)',
+                            }}>
+                              <FeatIcon size={14} style={{ color: feat.color, flexShrink: 0 }} />
+                              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: feat.color }}>{feat.label}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
+                  </div>
                 </div>
-              </div>
 
                 {/* Roles Section */}
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem 1.5rem 1.25rem' }}>
-                  <h4 style={{ margin: '0 0 1rem', fontSize: '0.75rem', fontWeight: 700, color: '#80848e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    🎭 Roles ({displayedRoles.length})
+                <div className={serverStyles.rolesSection}>
+                  <h4 style={{ margin: '0 0 1rem', fontSize: '0.75rem', fontWeight: 700, color: '#80848e', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Icons.Tag size={13} style={{ color: '#949ba4' }} /> Roles ({displayedRoles.length})
                   </h4>
                   {roles.length === 0 ? (
                     <div style={{ color: '#80848e', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -654,6 +635,7 @@ export default async function Page({ searchParams }) {
 
                   const renderChannel = (ch) => {
                     const info = channelTypeInfo(ch.type);
+                    const ChIcon = Icons[info.iconName] || Icons.Hash;
                     return (
                       <div key={ch.id} style={{
                         display: 'flex', alignItems: 'center', gap: '8px',
@@ -661,9 +643,7 @@ export default async function Page({ searchParams }) {
                         borderRadius: '4px',
                         cursor: 'default',
                       }}>
-                        <span style={{ fontSize: '0.9rem', width: '16px', textAlign: 'center', flexShrink: 0, color: '#80848e' }}>
-                          {info.emoji}
-                        </span>
+                        <ChIcon size={14} style={{ color: '#80848e', flexShrink: 0 }} />
                         <span style={{ fontSize: '0.825rem', color: '#80848e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {ch.name}
                         </span>
@@ -677,14 +657,11 @@ export default async function Page({ searchParams }) {
                   };
 
                   return (
-                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div className={serverStyles.channelsSection}>
                       {/* Header */}
-                      <div style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '1rem 1.5rem 0.5rem',
-                      }}>
-                        <h4 style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: '#80848e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          📡 Channels ({channels.filter(c => c.type !== 4).length})
+                      <div className={serverStyles.channelsHeader}>
+                        <h4 style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: '#80848e', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                           <Icons.Radio size={13} style={{ color: '#949ba4' }} /> Channels ({channels.filter(c => c.type !== 4).length})
                         </h4>
                         {channels.length === 0 && (
                           <span style={{ fontSize: '0.72rem', color: '#f0b232', background: 'rgba(240,178,36,0.1)', border: '1px solid rgba(240,178,36,0.2)', borderRadius: '6px', padding: '2px 8px' }}>
@@ -695,15 +672,10 @@ export default async function Page({ searchParams }) {
 
                       {channels.length === 0 ? (
                         <div style={{ padding: '0.75rem 1.5rem 1.25rem', color: '#4e5058', fontSize: '0.82rem', lineHeight: 1.5 }}>
-                          Click <strong style={{ color: '#5865F2' }}>🤖 Invite Bot</strong> above and authorize it for this server to unlock channel data.
+                          No channel data available. The bot needs access to this server.
                         </div>
                       ) : (
-                        <div style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                          gap: '0',
-                          padding: '0 0 1rem',
-                        }}>
+                        <div className={serverStyles.channelsGrid}>
                           {/* Uncategorised channels */}
                           {uncategorised.map(ch => renderChannel(ch))}
 
@@ -724,7 +696,7 @@ export default async function Page({ searchParams }) {
                                   </span>
                                 </div>
                                 {/* Children in a mini grid */}
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
+                                <div className={serverStyles.subChannelsGrid}>
                                   {children.map(ch => renderChannel(ch))}
                                 </div>
                               </div>
@@ -737,11 +709,11 @@ export default async function Page({ searchParams }) {
                 })()}
 
                 {/* Engagement Section */}
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem' }}>
+                <div className={serverStyles.engagementSection}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
                     <Icons.Flame size={16} style={{ color: '#ffab1a' }} />
                     <h4 style={{ margin: 0, fontSize: '0.75rem', fontWeight: 700, color: '#80848e', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                      🔥 Top Active Members
+                      Top Active Members
                     </h4>
                   </div>
 
@@ -751,7 +723,7 @@ export default async function Page({ searchParams }) {
                       <span>{roles.length === 0 ? 'Invite the bot to scan message activity.' : 'No recent message activity found in text channels.'}</span>
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
+                    <div className={serverStyles.engagementGrid}>
                       {engagement.map((member, idx) => {
                         const topCount = engagement[0].count;
                         const pct = topCount > 0 ? (member.count / topCount) * 100 : 0;
@@ -815,12 +787,7 @@ export default async function Page({ searchParams }) {
                 </div>
 
                 {/* Privacy footer strip */}
-                <div style={{
-                  padding: '0.875rem 1.5rem',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  gap: '1rem', flexWrap: 'wrap',
-                  background: 'rgba(0,0,0,0.2)',
-                }}>
+                <div className={serverStyles.cardFooter}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Icons.Shield size={14} style={{ color: '#3ba55d', flexShrink: 0 }} />
                     <span style={{ fontSize: '0.78rem', color: '#949ba4' }}>

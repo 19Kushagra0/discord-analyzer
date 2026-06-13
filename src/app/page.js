@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from '@/styles/landing.module.css';
-import { ArrowRight } from '@/components/Icons';
+import { ArrowRight, Zap } from '@/components/Icons';
 import Link from 'next/link';
 
 export default function Page() {
@@ -18,7 +18,7 @@ export default function Page() {
           </div>
         </div>
         <div className={styles.navActions}>
-          <Link className={styles.navLink} href="/login" style={{ fontSize: '13px', marginRight: '8px' }}>Demo Mode</Link>
+          <Link className={styles.navLoginLink} href="/login" style={{ fontSize: '13px', marginRight: '8px' }}>Demo Mode</Link>
           <Link className={styles.navConnectBtn} href="/login">Connect Discord</Link>
         </div>
       </nav>
@@ -31,7 +31,7 @@ export default function Page() {
             Pirates of the Coral-bean Hackathon
           </div>
           <h1 className={styles.heroTitle}>
-            Stop guessing why your<br />Discord server is dying.
+            Stop guessing why your Discord server is dying.
           </h1>
           <p className={styles.heroSubtitle}>
             We use the <strong>Coral Data Layer</strong> to securely fetch your community metrics, and an <strong>AI Community Manager</strong> to instantly tell you why engagement dropped—and exactly how to fix it.
@@ -42,7 +42,7 @@ export default function Page() {
               <ArrowRight size={18} />
             </Link>
             <Link href="/login" className={styles.secondaryBtn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-              ⚡ Try Demo Mode
+              <Zap size={16} color="#ffbd2e" fill="#ffbd2e" /> Try Demo Mode
             </Link>
           </div>
           <div className={styles.dividerSection}>
@@ -71,9 +71,8 @@ export default function Page() {
                 <div className={styles.dotGreen} />
                 <div className={styles.mockupUrl}>app.coralstats.dev</div>
               </div>
-              {/* Dashboard Mockup Image Placeholder */}
               <div className={styles.mockupImageWrapper}>
-                <img alt="Dashboard Preview" className={styles.mockupImage} src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkPQZWpES_KIgBGZt0Reafk1myJH-ned8EC1QmCDvmRZRS6aD8lFRneIu4xkh_x_x2MzJKaG_jrJVm-my90nebvtG7MFX0k0mo4DYi03-wSmDg6HbsA2n-5i4SbFdFtfiNNjdhgWVOL2ajVULpge8yceMtQYbLOdib8PhpmPfCAmSc1DeKTg6qeBv8jv6QTVc0Qz7k6ObR4IoOOqjerf1f6ab05MzkvlVN0Q0PE0Rh0SgHZnOLdz5q5y-lRD9heNexBlyJ-81oQeuU" />
+                <img alt="Dashboard Preview" className={styles.mockupImage} src="/dashboard_mockup.png" />
                 <div className={styles.mockupOverlay} />
               </div>
             </div>

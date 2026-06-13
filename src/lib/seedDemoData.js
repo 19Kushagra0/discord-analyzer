@@ -4,14 +4,25 @@
  * Ensures zero leakage of personal data by operating on simulated data based on a legacy, high-privilege account.
  */
 
+let isSeeded = false;
+
 export async function ensureDemoDataSeeded(db) {
+  if (isSeeded) return;
+
   try {
     const profileRef = db.collection('demo_data').doc('profile');
-    const doc = await profileRef.get();
-    if (!doc.exists) {
-      console.log("Demo data not found in Firestore. Running self-healing seeding engine...");
+    const guildsRef = db.collection('demo_data').doc('guilds');
+    const [profileDoc, guildsDoc] = await Promise.all([profileRef.get(), guildsRef.get()]);
+
+    // Reseed if data is missing OR if iconUrl field hasn't been added yet (migration)
+    const guildsData = guildsDoc.exists ? guildsDoc.data() : null;
+    const needsReseed = !profileDoc.exists || !guildsData || !guildsData.list?.[0]?.iconUrl;
+
+    if (needsReseed) {
+      console.log("Demo data missing or outdated. Running self-healing seeding engine...");
       await seedDemoData(db);
     }
+    isSeeded = true;
   } catch (e) {
     console.error("Failed checking or seeding demo data in Firestore:", e);
   }
@@ -41,11 +52,11 @@ export async function seedDemoData(db) {
   const guildsRef = db.collection('demo_data').doc('guilds');
   batch.set(guildsRef, {
     list: [
-      { id: "1111", name: "🏴‍☠️ Pirates of Coral-bean", icon: null, owner: true, permissions: "1099511627775", member_count: 14200 },
-      { id: "2222", name: "👾 Retro Arcade", icon: null, owner: true, permissions: "1099511627775", member_count: 6500 },
-      { id: "3333", name: "☕ Developers Anonymous", icon: null, owner: true, permissions: "8", member_count: 1250 },
-      { id: "4444", name: "🎓 Academic Cove", icon: null, owner: false, permissions: "0", member_count: 340 },
-      { id: "5555", name: "🎨 Creative Sandbox", icon: null, owner: false, permissions: "0", member_count: 85 }
+      { id: "1111", name: "Pirates of Coral-bean", iconUrl: "/server-icons/pirates.png", icon: null, owner: true, permissions: "1099511627775", member_count: 14200 },
+      { id: "2222", name: "Retro Arcade", iconUrl: "/server-icons/arcade.png", icon: null, owner: true, permissions: "1099511627775", member_count: 6500 },
+      { id: "3333", name: "Developers Anonymous", iconUrl: "/server-icons/devs.png", icon: null, owner: true, permissions: "8", member_count: 1250 },
+      { id: "4444", name: "Academic Cove", iconUrl: "/server-icons/academic.png", icon: null, owner: false, permissions: "0", member_count: 340 },
+      { id: "5555", name: "Creative Sandbox", iconUrl: "/server-icons/creative.png", icon: null, owner: false, permissions: "0", member_count: 85 }
     ]
   });
 
@@ -55,7 +66,8 @@ export async function seedDemoData(db) {
     list: [
       {
         id: "1111",
-        name: "🏴‍☠️ Pirates of Coral-bean",
+        name: "Pirates of Coral-bean",
+        iconUrl: "/server-icons/pirates.png",
         icon: null,
         owner: true,
         permissions: "1099511627775",
@@ -63,7 +75,8 @@ export async function seedDemoData(db) {
       },
       {
         id: "2222",
-        name: "👾 Retro Arcade",
+        name: "Retro Arcade",
+        iconUrl: "/server-icons/arcade.png",
         icon: null,
         owner: true,
         permissions: "1099511627775",
@@ -71,7 +84,8 @@ export async function seedDemoData(db) {
       },
       {
         id: "3333",
-        name: "☕ Developers Anonymous",
+        name: "Developers Anonymous",
+        iconUrl: "/server-icons/devs.png",
         icon: null,
         owner: true,
         permissions: "8",

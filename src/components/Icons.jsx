@@ -25,7 +25,24 @@ import {
   Compass,
   Flame,
   CheckCircle2,
-  Trash2
+  Trash2,
+  Zap,
+  Hash,
+  Radio,
+  Folder,
+  Megaphone,
+  Mic2,
+  Lock,
+  Star,
+  Link2,
+  Globe,
+  Tag,
+  LayoutGrid,
+  Tv,
+  HelpCircle,
+  Rocket,
+  TrendingUp,
+  BarChart2 as BarChart
 } from 'lucide-react';
 
 export {
@@ -55,7 +72,24 @@ export {
   Compass,
   Flame,
   CheckCircle2,
-  Trash2
+  Trash2,
+  Zap,
+  Hash,
+  Radio,
+  Folder,
+  Megaphone,
+  Mic2,
+  Lock,
+  Star,
+  Link2,
+  Globe,
+  Tag,
+  LayoutGrid,
+  Tv,
+  HelpCircle,
+  Rocket,
+  TrendingUp,
+  BarChart as BarChartIcon
 };
 
 
